@@ -21,7 +21,7 @@ junit = "4.13.2"
 #as var and lambda expressions2. Therefore, if you want to use koin with JavaVersion.VERSION_1_8,
 #you should stick to koin version 3.1.2 or lower.
 #noinspection GradleDependency
-koin = "3.1.2"
+koin = "3.4.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

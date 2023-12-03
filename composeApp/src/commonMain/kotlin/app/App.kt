@@ -7,6 +7,9 @@ import values.PoliterAiTheme
 @Composable
 fun App() {
     PoliterAiTheme {
+        // Set current Koin instance to Compose context
+//        KoinContext() {
         HomeView()
+//        }
     }
 }
