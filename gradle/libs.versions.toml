@@ -15,6 +15,13 @@ androidx-test-junit = "1.1.5"
 androidx-espresso-core = "3.5.1"
 kotlin = "1.9.20"
 junit = "4.13.2"
+#koin version 3.1.2 is compatible with Java 8, as it does not require any specific Java features
+#that are only available in higher versions1.
+#However, koin version 3.4.2 is not compatible with Java 8, as it uses some Java 11 features such
+#as var and lambda expressions2. Therefore, if you want to use koin with JavaVersion.VERSION_1_8,
+#you should stick to koin version 3.1.2 or lower.
+#noinspection GradleDependency
+koin = "3.1.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -33,6 +40,8 @@ androidx-material = { group = "com.google.android.material", name = "material", 
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-core = { group = "androidx.core", name = "core", version = "1.12.0" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }

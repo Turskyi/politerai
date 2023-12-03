@@ -37,6 +37,7 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.koin.android)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -93,6 +94,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core)
+    implementation(libs.koin.core)
 }
 
 compose.desktop {
