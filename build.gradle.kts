@@ -7,3 +7,14 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     id("org.jetbrains.kotlin.android") version "1.9.20" apply false
 }
+
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+    }
+    dependencies {
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.40.5")
+        classpath("androidx.hilt:hilt-compiler:1.0.0")
+    }
+}
