@@ -1,5 +1,6 @@
 package modules.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,18 +14,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -34,56 +42,81 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import entity.Entity
+import interactors.GetPoliteMessageUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun HomeView() {
+    val useCase = GetPoliteMessageUseCase()
+    // Returns a scope that's cancelled when F is removed from composition
+    val scope: CoroutineScope = rememberCoroutineScope()
     var prompt: String by remember { mutableStateOf("") }
     var message: String by remember { mutableStateOf("") }
     var messageLoading: Boolean by remember { mutableStateOf(false) }
     var messageLoadingError: Boolean by remember { mutableStateOf(false) }
     var showImage: Boolean by remember { mutableStateOf(true) }
-    var isTextFieldFocused by remember { mutableStateOf(false) }
-
-    // A mock function to get the polite message from the API
-// You can replace this with your actual API call
-    fun getPoliteMessage(prompt: String): String {
-        return when (prompt) {
-            "I do not have time for this nonsense. Stop bothering me." -> "I'm sorry, but I'm really busy right now. Could you please contact me later? Thank you for your understanding."
-            "Your work is terrible. You should be ashamed of yourself." -> "I'm afraid your work does not meet the expected standards. You might want to review it and make some improvements."
-            "You are such a jerk. I hate you." -> "You are not very nice. I don't appreciate your behavior."
-            else -> "I don't know how to make this message more polite. Maybe you can try to rephrase it or use more positive words."
-        }
-    }
+    var isTextFieldFocused: Boolean by remember { mutableStateOf(false) }
+    val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
 
     fun handleSubmit() {
+        keyboardController?.hide()
         message = ""
         if (prompt.isNotEmpty()) {
             try {
+                isTextFieldFocused = true
                 messageLoadingError = false
                 messageLoading = true
-                message = if (prompt.length < 5) {
-                    "Message too short"
+                if (prompt.length < 5) {
+                    message = "Message too short"
                 } else {
                     // Call the API to get the polite message
-                    // For simplicity, I will use a mock function here
-                    getPoliteMessage(prompt)
+                    // Launch a coroutine
+                    scope.launch {
+                        // Call the suspend function on a background thread
+                        withContext(Dispatchers.IO) {
+                            val entity: Entity = useCase.getPoliteMessage(prompt)
+                            // Update the state with the message
+                            message = entity.politerMessage
+                            messageLoading = false
+                        }
+                    }
                 }
             } catch (error: Exception) {
                 messageLoadingError = true
-            } finally {
                 messageLoading = false
+            }
+        } else {
+            // Launch a coroutine to show the Snackbar
+            scope.launch {
+                // Show the Snackbar with a message
+                snackbarHostState.showSnackbar(
+                    message = "Please enter some text before clicking the button",
+                    duration = SnackbarDuration.Short,
+                )
             }
         }
     }
 
-    // Colors for the gradient
+
+// Colors for the gradient
     val colors: List<Color> = listOf(Color.White, Color(0xFFDFCAFF))
-    // A linear gradient brush with the colors
+
+// A linear gradient brush with the colors
     val gradient: Brush = Brush.linearGradient(
         colors = colors,
         start = Offset(x = 0f, y = 0f),
@@ -117,7 +150,13 @@ fun HomeView() {
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedTextField(
                 value = prompt,
-                onValueChange = { input -> prompt = input },
+                onValueChange = { input ->
+                    prompt = input
+                    if (input.isEmpty()) {
+                        message = ""
+                        showImage = true
+                    }
+                },
                 label = {
                     Box(
                         modifier = Modifier.background(
@@ -145,6 +184,15 @@ fun HomeView() {
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     backgroundColor = Color.White,
                 ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                    },
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Text
+                ),
             )
             Button(
                 onClick = { handleSubmit() },
@@ -153,7 +201,7 @@ fun HomeView() {
             ) {
                 Text("Polite it up 😊")
             }
-            if (messageLoading) {
+            AnimatedVisibility(visible = messageLoading) {
                 CircularProgressIndicator(modifier = Modifier.padding(10.dp))
             }
             if (messageLoadingError) {
@@ -171,7 +219,7 @@ fun HomeView() {
                 )
                 showImage = false
             }
-            if (showImage) {
+            AnimatedVisibility(visible = showImage) {
                 Box(
                     modifier = Modifier.padding(10.dp)
                         .width(380.dp)
@@ -203,5 +251,9 @@ fun HomeView() {
                 }
             }
         }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
