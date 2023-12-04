@@ -83,6 +83,7 @@ fun HomeView() {
                 messageLoading = true
                 if (prompt.length < 5) {
                     message = "Message too short"
+                    messageLoading = false
                 } else {
                     // Call the API to get the polite message
                     // Launch a coroutine

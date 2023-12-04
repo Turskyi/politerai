@@ -6,6 +6,7 @@ import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
+import io.ktor.http.encodeURLParameter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -25,8 +26,10 @@ class RestClient {
         prompt: String,
     ): Entity {
         return try {
-            httpClient.get("https://www.politerai.com/api/polite?prompt=${prompt}").body()
+            httpClient.get("https://www.politerai.com/api/polite?prompt=${prompt.encodeURLParameter()}")
+                .body()
         } catch (e: NoTransformationFoundException) {
+            println(e)
             Entity(politerMessage = "Looks like something went wrong. Please contact support!")
         }
     }
