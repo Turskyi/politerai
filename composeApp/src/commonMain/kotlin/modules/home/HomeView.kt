@@ -223,7 +223,8 @@ fun HomeView() {
                         end = 10.dp,
                         bottom = 40.dp,
                     ),
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h5,
+                    textAlign = TextAlign.Center,
                 )
                 showImage = false
             }
