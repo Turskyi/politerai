@@ -12,6 +12,11 @@ This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
 **Compose Multiplatform** is a focused library that enables cross-platform UI development with
 Jetpack Compose.
 
+## PROJECT SPECIFICATION
+
+• App testing platforms:
+[Firebase App Distribution](https://appdistribution.firebase.dev/i/353f302e0032e469);
+
 ## Credits
 
 This project is based on the

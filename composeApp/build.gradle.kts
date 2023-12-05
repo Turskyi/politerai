@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     id("org.jetbrains.kotlin.android") version "1.9.20" apply false
     kotlin("plugin.serialization").version("1.9.21")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 kotlin {
@@ -105,6 +107,8 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 }
 
 compose.desktop {

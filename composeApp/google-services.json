@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "287476527326",
+    "project_id": "politerai",
+    "storage_bucket": "politerai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287476527326:android:97e89710289ea08c93d24f",
+        "android_client_info": {
+          "package_name": "com.turskyi.politerai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAy_1E14gDH4Ga9YoPIV03rD5wj_2jwEBM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
