@@ -1,0 +1,119 @@
+workflows:
+  android-kmm-workflow:
+    name: Politer AI Android KMM Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - Put your google-services.json here)
+      vars:
+        PACKAGE_NAME: "com.turskyi.politerai"
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "*"
+          include: true
+      cancel_previous_builds: false
+    scripts:
+      - name: Build Android release
+        script: |
+          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
+          if [ -z LATEST_GOOGLE_PLAY_BUILD_NUMBER ]; then
+            # fallback in case no build number was found from Google Play.
+            # Alternatively, you can `exit 1` to fail the build
+            # BUILD_NUMBER is a Codemagic built-in variable tracking the number
+            # of times this workflow has been built
+            UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          else
+            UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          fi
+          cd $CM_BUILD_DIR/androidApp
+          ./gradlew bundleRelease \
+            -PversionCode=$UPDATED_BUILD_NUMBER \
+            -PversionName=1.0.$UPDATED_BUILD_NUMBER
+    artifacts:
+      - androidApp/build/outputs/**/**/*.aab
+      - androidApp/build/outputs/**/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
+  
+  ios-kmm-workflow:
+    name: iOS Workflow
+    instance_type: mac_mini_m1
+    max_build_duration: 120
+    integrations:
+      app_store_connect: codemagic
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "*"
+          include: false
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.kmmsample
+      vars:
+        XCODE_PROJECT: "iosApp.xcodeproj" # <-- Put your xcode project name here
+        XCODE_SCHEME: "iosApp" # <-- Put your bundle xcode scheme here
+        APP_ID: 1630136022 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID.
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+    scripts:
+      - name: Cocoapods installation
+        script: |
+          cd $CM_BUILD_DIR/iosApp
+          pod install
+      - name: Set up code signing settings on Xcode project
+        script: |
+          cd $CM_BUILD_DIR/iosApp
+          xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          #!/bin/sh
+          set -e
+          set -x
+          cd $CM_BUILD_DIR/iosApp
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_ID")
+          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+      - name: Build ipa for distribution
+        script: |
+          cd $CM_BUILD_DIR/iosApp
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - iosApp/build/ios/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      app_store_connect:
+        auth: integration
+
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_testflight: true
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+          - group name 1
+          - group name 2
+
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: false
