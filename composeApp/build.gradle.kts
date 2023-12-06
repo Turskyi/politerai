@@ -66,7 +66,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.turskyi.politerai"
+    namespace = libs.versions.applicationId.get()
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -74,11 +74,11 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "com.turskyi.politerai"
+        applicationId = libs.versions.applicationId.get()
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = libs.versions.versionName.get()
     }
     buildFeatures {
         compose = true
@@ -117,8 +117,8 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.turskyi.politerai"
-            packageVersion = "1.0.0"
+            packageName = libs.versions.applicationId.get()
+            packageVersion = libs.versions.versionName.get()
         }
     }
 }
