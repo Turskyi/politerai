@@ -1,5 +1,6 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,6 +11,10 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
+
+val keystorePropertiesFile: File = rootProject.file("key.properties")
+val keystoreProperties: Properties = Properties()
+keystoreProperties.load(keystorePropertiesFile.inputStream())
 
 kotlin {
     androidTarget {
@@ -80,6 +85,60 @@ android {
         versionCode = 1
         versionName = libs.versions.versionName.get()
     }
+    signingConfigs {
+        register("release") {
+            if (System.getenv()["CI"] == "true") { // CI=true is exported by Codemagic
+                storeFile = System.getenv()["CM_KEYSTORE_PATH"]?.let { file(it) }
+                storePassword = System.getenv()["CM_KEYSTORE_PASSWORD"]
+                keyAlias = System.getenv()["CM_KEY_ALIAS"]
+                keyPassword = System.getenv()["CM_KEY_PASSWORD"]
+            } else {
+                storeFile = file(
+                    path = keystoreProperties["storeFile"] as? String
+                        ?: throw IllegalStateException("storeFile is missing or invalid"),
+                )
+                storePassword = keystoreProperties["storePassword"] as? String
+                    ?: throw IllegalStateException("storePassword is missing or invalid")
+                keyAlias = keystoreProperties["keyAlias"] as? String ?: throw IllegalStateException(
+                    "keyAlias is missing or invalid"
+                )
+                keyPassword = keystoreProperties["keyPassword"] as? String
+                    ?: throw IllegalStateException("keyPassword is missing or invalid")
+            }
+        }
+        register("dev") {
+            storeFile = file(
+                path = keystoreProperties["SIGNING_KEY_DEBUG_PATH"] as? String
+                    ?: throw IllegalStateException(
+                        "SIGNING_KEY_DEBUG_PATH for storeFile is missing or invalid",
+                    ),
+            )
+            storePassword = keystoreProperties["SIGNING_KEY_DEBUG_PASSWORD"] as? String
+                ?: throw IllegalStateException("storePassword is missing or invalid")
+            keyAlias = keystoreProperties["SIGNING_KEY_DEBUG_KEY"] as? String
+                ?: throw IllegalStateException(
+                    "keyAlias is missing or invalid"
+                )
+            keyPassword = keystoreProperties["SIGNING_KEY_DEBUG_KEY_PASSWORD"] as? String
+                ?: throw IllegalStateException("keyPassword is missing or invalid")
+        }
+        register("production") {
+            storeFile = file(
+                path = keystoreProperties["SIGNING_KEY_RELEASE_PATH"] as? String
+                    ?: throw IllegalStateException(
+                        "SIGNING_KEY_RELEASE_PATH for storeFile is missing or invalid",
+                    ),
+            )
+            storePassword = keystoreProperties["SIGNING_KEY_RELEASE_PASSWORD"] as? String
+                ?: throw IllegalStateException("storePassword is missing or invalid")
+            keyAlias = keystoreProperties["SIGNING_KEY_RELEASE_KEY"] as? String
+                ?: throw IllegalStateException(
+                    "keyAlias is missing or invalid"
+                )
+            keyPassword = keystoreProperties["SIGNING_KEY_RELEASE_KEY_PASSWORD"] as? String
+                ?: throw IllegalStateException("keyPassword is missing or invalid")
+        }
+    }
     buildFeatures {
         compose = true
     }
@@ -94,6 +153,10 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+        }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("dev")
         }
     }
     compileOptions {

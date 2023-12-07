@@ -16,4 +16,4 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 key.properties
-codemagic.keystore
+composeApp/src/androidMain/keystore/codemagic.keystore
