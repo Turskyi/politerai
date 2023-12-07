@@ -43,5 +43,5 @@ jobs:
           token: ${{secrets.FIREBASE_TOKEN}}
           groups: testers
           releaseNotes: "Politer AI Android Application Build"
-          file: composeApp/build/outputs/apk/release/composeApp-release.apk
+          file: composeApp/build/outputs/apk/debug/composeApp-debug.apk
 
