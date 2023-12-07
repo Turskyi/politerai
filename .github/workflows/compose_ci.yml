@@ -49,6 +49,13 @@ jobs:
         env:
           CODEMAGIC_KEYSTORE: ${{ secrets.CODEMAGIC_KEYSTORE }}
 
+      - name: Write politerai_release.keystore file
+        run: |
+          echo $RELEASE_KEYSTORE | base64 -d > composeApp/src/androidMain/keystore/politerai_release.keystore
+        shell: bash
+        env:
+          CODEMAGIC_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
+
       - name: Generate Release APK
         run: ./gradlew assembleDebug
 
@@ -59,5 +66,5 @@ jobs:
           token: ${{secrets.FIREBASE_TOKEN}}
           groups: testers
           releaseNotes: "Politer AI Android Application Build"
-          file: composeApp/build/outputs/apk/debug/composeApp-debug.apk
+          file: composeApp/build/outputs/apk/release/composeApp-release.apk
 
