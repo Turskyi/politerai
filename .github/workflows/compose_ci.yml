@@ -19,6 +19,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin' # Eclipse Temurin https://adoptium.net/
 
+      - name: Write key.properties file
+        run: |
+          echo $KEY_PROPERTIES | base64 -d > key.properties
+        shell: bash
+        env:
+          KEY_PROPERTIES: ${{ secrets.KEY_PROPERTIES }}
+
       - name: Generate Release APK
         run: ./gradlew assembleRelease
 
