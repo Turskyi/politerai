@@ -26,13 +26,6 @@ jobs:
         env:
           KEY_PROPERTIES: ${{ secrets.KEY_PROPERTIES }}
 
-      - name: Write codemagic.keystore file
-        run: |
-          echo $CODEMAGIC_KEYSTORE | base64 -d > composeApp/src/androidMain/keystore/codemagic.keystore
-        shell: bash
-        env:
-          CODEMAGIC_KEYSTORE: ${{ secrets.CODEMAGIC_KEYSTORE }}
-
       - name: Write politerai_release.keystore file
         run: |
           echo $RELEASE_KEYSTORE | base64 -d > composeApp/src/androidMain/keystore/politerai_release.keystore
