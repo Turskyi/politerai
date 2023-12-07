@@ -21,6 +21,7 @@ jobs:
 
       - name: Write key.properties file
         run: |
+          echo $KEY_PROPERTIES | base64 -d > key.properties
           echo $KEY_PROPERTIES | base64 -d > composeApp/key.properties
         shell: bash
         env:
