@@ -61,7 +61,7 @@ jobs:
           echo $DEBUG_KEYSTORE | base64 -d > composeApp/src/androidMain/keystore/politerai_debug.keystore
         shell: bash
         env:
-          RELEASE_KEYSTORE: ${{ secrets.DEBUG_KEYSTORE }}
+          DEBUG_KEYSTORE: ${{ secrets.DEBUG_KEYSTORE }}
 
       - name: Generate Release APK
         run: ./gradlew assembleDebug
