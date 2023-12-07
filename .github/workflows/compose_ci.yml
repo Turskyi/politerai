@@ -31,7 +31,7 @@ jobs:
           echo $CODEMAGIC_KEYSTORE | base64 -d > composeApp/src/androidMain/keystore/codemagic.keystore
         shell: bash
         env:
-          KEY_PROPERTIES: ${{ secrets.CODEMAGIC_KEYSTORE }}
+          CODEMAGIC_KEYSTORE: ${{ secrets.CODEMAGIC_KEYSTORE }}
 
       - name: Generate Release APK
         run: ./gradlew assembleRelease
