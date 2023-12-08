@@ -82,7 +82,7 @@ android {
         applicationId = libs.versions.applicationId.get()
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
+        versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.versionName.get()
     }
     signingConfigs {
