@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build Politer AI Android mobile application
+    name: Build Politer AI Android mobile application and upload to Firebase App Distribution
     runs-on: ubuntu-latest
 
     steps:
@@ -41,6 +41,13 @@ jobs:
         shell: bash
         env:
           DEBUG_KEYSTORE: ${{ secrets.DEBUG_KEYSTORE }}
+
+      - name: Write codemagic.keystore file
+        run: |
+          echo $CODEMAGIC_KEYSTORE | base64 -d > composeApp/src/androidMain/keystore/codemagic.keystore
+        shell: bash
+        env:
+          CODEMAGIC_KEYSTORE: ${{ secrets.CODEMAGIC_KEYSTORE }}
 
       - name: Generate Release APK
         run: ./gradlew assembleRelease
