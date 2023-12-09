@@ -125,7 +125,10 @@ android {
         }
         register("production") {
             storeFile = file(
-                path = "../composeApp/src/androidMain/keystore/politerai_release.keystore",
+                path = keystoreProperties["SIGNING_KEY_RELEASE_PATH"] as? String
+                    ?: throw IllegalStateException(
+                        "SIGNING_KEY_RELEASE_PATH for storeFile is missing or invalid",
+                    ),
             )
             storePassword = keystoreProperties["SIGNING_KEY_RELEASE_PASSWORD"] as? String
                 ?: throw IllegalStateException("storePassword is missing or invalid")
