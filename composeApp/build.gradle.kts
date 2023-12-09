@@ -90,7 +90,8 @@ android {
             if (System.getenv()["FCI_BUILD_ID"] != null) { // FCI_BUILD_ID is exported by Codemagic
                 storeFile = System.getenv()["CM_KEYSTORE_PATH"]?.let { file(it) }
                 storePassword = System.getenv()["CM_KEYSTORE_PASSWORD"]
-                keyAlias = System.getenv()["CM_KEY_ALIAS"]
+                keyAlias = keystoreProperties["SIGNING_KEY_RELEASE_KEY"] as? String
+                    ?: throw IllegalStateException("keyAlias is missing or invalid")
                 keyPassword = System.getenv()["CM_KEY_PASSWORD"]
             } else {
                 storeFile = file(
@@ -132,9 +133,7 @@ android {
             storePassword = keystoreProperties["SIGNING_KEY_RELEASE_PASSWORD"] as? String
                 ?: throw IllegalStateException("storePassword is missing or invalid")
             keyAlias = keystoreProperties["SIGNING_KEY_RELEASE_KEY"] as? String
-                ?: throw IllegalStateException(
-                    "keyAlias is missing or invalid"
-                )
+                ?: throw IllegalStateException("keyAlias is missing or invalid")
             keyPassword = keystoreProperties["SIGNING_KEY_RELEASE_KEY_PASSWORD"] as? String
                 ?: throw IllegalStateException("keyPassword is missing or invalid")
         }
@@ -153,7 +152,12 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("production")
+            signingConfig =
+                if (System.getenv()["CI"] == "true") { // CI=true is exported by Codemagic
+                    signingConfigs.getByName("release")
+                } else {
+                    signingConfigs.getByName("production")
+                }
         }
         getByName("debug") {
             signingConfig = signingConfigs.getByName("dev")
