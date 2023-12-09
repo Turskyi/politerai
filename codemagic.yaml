@@ -1,6 +1,6 @@
 workflows:
   android-kmm-workflow:
-    name: Politer AI Android KMP Workflow
+    name: Politer AI Android Kotlin multiplatform workflow to publish app bundle to Google Play
     max_build_duration: 120
     environment:
       android_signing:
