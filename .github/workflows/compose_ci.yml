@@ -39,9 +39,6 @@ jobs:
           RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
         run: |
           echo $RELEASE_KEYSTORE | base64 --decode > composeApp/src/androidMain/keystore/politerai_release.keystore
-      - name: Show certificate information
-        run: |
-          openssl x509 -in composeApp/src/androidMain/keystore/politerai_release.keystore -inform DER -text -noout
 
       - name: Write politerai_debug.keystore file
         run: |
