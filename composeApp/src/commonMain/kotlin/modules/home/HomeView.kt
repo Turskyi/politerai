@@ -139,7 +139,7 @@ fun HomeView() {
                 color = Color(0xFF7669ff)
             )
             Text(
-                text = "powered by GPT-3",
+                text = "powered by GPT-3.5",
                 modifier = Modifier.padding(10.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.h6
