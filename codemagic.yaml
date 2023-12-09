@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 120
     environment:
       android_signing:
-        - keystore_reference
+        - politerai_android_keystore_reference
       groups:
         - google_play_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - google-services.json here)
       vars:
