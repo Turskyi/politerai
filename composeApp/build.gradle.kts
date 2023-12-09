@@ -153,12 +153,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            signingConfig =
-                if (System.getenv()["CI"] == "true") { // CI=true is exported by Codemagic
-                    signingConfigs.getByName("release")
-                } else {
-                    signingConfigs.getByName("production")
-                }
+            signingConfig = signingConfigs.getByName("production")
         }
         getByName("debug") {
             signingConfig = signingConfigs.getByName("dev")
