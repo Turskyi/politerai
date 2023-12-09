@@ -87,24 +87,24 @@ android {
     }
     signingConfigs {
         register("release") {
-            if (System.getenv()["CI"] == "true") { // CI=true is exported by Codemagic
-                storeFile = System.getenv()["CM_KEYSTORE_PATH"]?.let { file(it) }
-                storePassword = System.getenv()["CM_KEYSTORE_PASSWORD"]
-                keyAlias = System.getenv()["CM_KEY_ALIAS"]
-                keyPassword = System.getenv()["CM_KEY_PASSWORD"]
-            } else {
-                storeFile = file(
-                    path = keystoreProperties["storeFile"] as? String
-                        ?: throw IllegalStateException("storeFile is missing or invalid"),
-                )
-                storePassword = keystoreProperties["storePassword"] as? String
-                    ?: throw IllegalStateException("storePassword is missing or invalid")
-                keyAlias = keystoreProperties["keyAlias"] as? String ?: throw IllegalStateException(
-                    "keyAlias is missing or invalid"
-                )
-                keyPassword = keystoreProperties["keyPassword"] as? String
+//            if (System.getenv()["CI"] == "true") { // CI=true is exported by Codemagic
+//                storeFile = System.getenv()["CM_KEYSTORE_PATH"]?.let { file(it) }
+//                storePassword = System.getenv()["CM_KEYSTORE_PASSWORD"]
+//                keyAlias = System.getenv()["CM_KEY_ALIAS"]
+//                keyPassword = System.getenv()["CM_KEY_PASSWORD"]
+//            } else {
+            storeFile = file(
+                path = keystoreProperties["storeFile"] as? String
+                    ?: throw IllegalStateException("storeFile is missing or invalid"),
+            )
+            storePassword = keystoreProperties["storePassword"] as? String
+                ?: throw IllegalStateException("storePassword is missing or invalid")
+            keyAlias = keystoreProperties["keyAlias"] as? String ?: throw IllegalStateException(
+                "keyAlias is missing or invalid"
+            )
+            keyPassword = keystoreProperties["keyPassword"] as? String
                     ?: throw IllegalStateException("keyPassword is missing or invalid")
-            }
+//            }
         }
         register("dev") {
             storeFile = file(
