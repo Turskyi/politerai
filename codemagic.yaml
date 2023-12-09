@@ -3,12 +3,13 @@ workflows:
     name: Politer AI Android Kotlin multiplatform workflow to publish app bundle to Google Play
     max_build_duration: 120
     environment:
+      vars:
+        PACKAGE_NAME: "com.turskyi.politerai"
+        JAVA_HOME: /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home # Path to Java 17
       android_signing:
         - politerai_android_keystore_reference
       groups:
         - google_play_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - google-services.json here)
-      vars:
-        PACKAGE_NAME: "com.turskyi.politerai"
     triggering:
       events:
         - push
