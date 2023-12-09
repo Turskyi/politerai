@@ -22,20 +22,26 @@ jobs:
       - name: Write key.properties file
         run: |
           echo $KEY_PROPERTIES | base64 -d > key.properties
-          echo $KEY_PROPERTIES | base64 -d > composeApp/key.properties
         shell: bash
         env:
           KEY_PROPERTIES: ${{ secrets.KEY_PROPERTIES }}
+      # This command is just an example to show your secret being printed
+      # Ensure you remove any print statements of your secrets. GitHub does
+      # not hide secrets that use this workaround.
+      - name: Test printing your secret (Remove this step in production)
+        run: cat key.properties
 
       - name: Create keystore folder
         run: mkdir -p composeApp/src/androidMain/keystore
 
       - name: Write politerai_release.keystore file
-        run: |
-          echo $RELEASE_KEYSTORE | base64 -d > composeApp/src/androidMain/keystore/politerai_release.keystore
-        shell: bash
         env:
           RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
+        run: |
+          echo $RELEASE_KEYSTORE | base64 --decode > composeApp/src/androidMain/keystore/politerai_release.keystore
+      - name: Show certificate information
+        run: |
+          openssl x509 -in composeApp/src/androidMain/keystore/politerai_release.keystore -inform DER -text -noout
 
       - name: Write politerai_debug.keystore file
         run: |
