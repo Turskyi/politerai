@@ -1,0 +1,47 @@
+workflows:
+  android-kmm-workflow:
+    name: Politer AI Android Kotlin multiplatform workflow to publish app bundle to Google Play
+    max_build_duration: 120
+    environment:
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - google-services.json here)
+      vars:
+        PACKAGE_NAME: "com.turskyi.politerai"
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master
+          include: true
+          source: true
+    scripts:
+      - name: Build Android release
+        script: |
+          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
+          if [ -z $LATEST_GOOGLE_PLAY_BUILD_NUMBER ]; then
+            # fallback in case no build number was found from Google Play.
+            # Alternatively, you can `exit 1` to fail the build
+            # BUILD_NUMBER is a Codemagic built-in variable tracking the number
+            # of times this workflow has been built
+            UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          else
+            UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          fi
+          cd $CM_BUILD_DIR/androidApp
+          ./gradlew bundleRelease \
+            -PversionCode=$UPDATED_BUILD_NUMBER \
+            -PversionName=1.0.$UPDATED_BUILD_NUMBER
+    artifacts:
+      - composeApp/build/outputs/**/**/*.aab
+    publishing:
+      email:
+        recipients:
+          - dmytro@turskyi.com
+        notify:
+          success: true
+          failure: true
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: production

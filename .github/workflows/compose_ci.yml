@@ -1,0 +1,63 @@
+name: Upload to Firebase App Distribution
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    name: Build Politer AI Android mobile application and upload to Firebase App Distribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2.3.3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin' # Eclipse Temurin https://adoptium.net/
+
+      - name: Write key.properties file
+        run: |
+          echo $KEY_PROPERTIES | base64 -d > key.properties
+        shell: bash
+        env:
+          KEY_PROPERTIES: ${{ secrets.KEY_PROPERTIES }}
+
+      - name: Create keystore folder
+        run: mkdir -p composeApp/src/androidMain/keystore
+
+      - name: Write politerai_release.keystore file
+        env:
+          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
+        run: |
+          echo $RELEASE_KEYSTORE | base64 --decode > composeApp/src/androidMain/keystore/politerai_release.keystore
+
+      - name: Write politerai_debug.keystore file
+        run: |
+          echo $DEBUG_KEYSTORE | base64 -d > composeApp/src/androidMain/keystore/politerai_debug.keystore
+        shell: bash
+        env:
+          DEBUG_KEYSTORE: ${{ secrets.DEBUG_KEYSTORE }}
+
+      - name: Write codemagic.keystore file
+        run: |
+          echo $CODEMAGIC_KEYSTORE | base64 -d > composeApp/src/androidMain/keystore/codemagic.keystore
+        shell: bash
+        env:
+          CODEMAGIC_KEYSTORE: ${{ secrets.CODEMAGIC_KEYSTORE }}
+
+      - name: Generate Release APK
+        run: ./gradlew assembleRelease
+
+      - name: upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{secrets.FIREBASE_ANDROID_APP_ID}}
+          token: ${{secrets.FIREBASE_TOKEN}}
+          groups: testers
+          releaseNotes: "Politer AI Android Application Build"
+          file: composeApp/build/outputs/apk/release/composeApp-release.apk
+
