@@ -25,6 +25,7 @@ firebase-analytics = "21.5.0"
 versionName = "1.0.2"
 versionCode = "3"
 applicationId = "com.turskyi.politerai"
+dockName = "Politer AI"
 
 [libraries]
 firebase-crashlytics-gradle = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsGradle" }

@@ -184,8 +184,20 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = libs.versions.applicationId.get()
+            packageName = libs.versions.dockName.get()
             packageVersion = libs.versions.versionName.get()
+
+            macOS {
+                iconFile.set(project.file("../composeApp/src/desktopMain/icons/icon.icns"))
+                bundleID = libs.versions.applicationId.get()
+                dockName = libs.versions.dockName.get()
+            }
+            windows {
+                iconFile.set(project.file("../composeApp/src/desktopMain/icons/icon.ico"))
+            }
+            linux {
+                iconFile.set(project.file("../composeApp/src/desktopMain/icons/icon.png"))
+            }
         }
     }
 }

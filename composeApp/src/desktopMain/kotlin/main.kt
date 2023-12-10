@@ -5,7 +5,11 @@ import androidx.compose.ui.window.application
 import app.App
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
+    Window(
+        // This is the window title
+        title = "Politer AI",
+        onCloseRequest = ::exitApplication
+    ) {
         App()
     }
 }
