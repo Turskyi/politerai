@@ -11,9 +11,9 @@ This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
 
 • Programming language: [Kotlin](https://kotlinlang.org/);
 
-• SDK: [Android](https://developer.android.com/tools);
-
 • Framework: [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/);
+
+• SDK: [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html);
 
 • Interface: [Compose](https://developer.android.com/jetpack/compose);
 
