@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -257,6 +258,20 @@ fun HomeView() {
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.matchParentSize(),
                     )
+                }
+            }
+            if (message.isNotEmpty()) {
+                Button(
+                    onClick = {
+                        //  open the email app
+                    },
+                    modifier = Modifier.padding(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent,
+                    ),
+                    elevation = ButtonDefaults.elevation(0.dp, pressedElevation = 0.dp)
+                ) {
+                    Text("Report a problem", color = Color.White)
                 }
             }
         }
