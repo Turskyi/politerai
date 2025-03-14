@@ -1,3 +1,4 @@
+
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.util.Properties
@@ -138,6 +139,7 @@ android {
                 ?: throw IllegalStateException("keyPassword is missing or invalid")
         }
     }
+
     buildFeatures {
         compose = true
     }
