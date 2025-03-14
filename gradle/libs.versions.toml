@@ -1,6 +1,5 @@
 [versions]
 compose = "1.5.4"
-compose-plugin = "1.5.11"
 compose-compiler = "1.5.4"
 agp = "8.9.0"
 android-minSdk = "24"
@@ -16,7 +15,7 @@ androidx-espresso-core = "3.5.1"
 firebaseCrashlyticsGradle = "2.9.9"
 googleServices = "4.4.0"
 gradle = "8.9.0"
-kotlin = "1.9.21"
+kotlin = "2.1.0"
 junit = "4.13.2"
 ktorVersion = "2.3.6"
 coroutinesVersion = "1.7.3"
@@ -26,6 +25,9 @@ versionName = "1.0.3"
 versionCode = "3"
 applicationId = "com.turskyi.politerai"
 dockName = "Politer AI"
+compose-multiplatform = "1.8.0-alpha01"
+googleGmsGoogleServices = "4.4.2"
+googleFirebaseCrashlytics = "3.0.3"
 
 [libraries]
 firebase-crashlytics-gradle = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsGradle" }
@@ -59,7 +61,10 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebase-analytics" }
 
 [plugins]
-jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+googleGmsGoogleServices = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
+googleFirebaseCrashlytics = { id = "com.google.firebase.crashlytics", version.ref = "googleFirebaseCrashlytics" }
