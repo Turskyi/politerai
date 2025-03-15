@@ -1,4 +1,3 @@
-
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.util.Properties
 
@@ -71,7 +70,7 @@ kotlin {
 
 android {
     namespace = libs.versions.applicationId.get()
-    compileSdk = 35
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -86,10 +85,12 @@ android {
     signingConfigs {
         register("release") {
             if (System.getenv()["FCI_BUILD_ID"] != null) { // FCI_BUILD_ID is exported by Codemagic
-                storeFile = System.getenv()["CM_KEYSTORE_PATH"]?.let { file(it) }
+                storeFile =
+                    System.getenv()["CM_KEYSTORE_PATH"]?.let { file(it) }
                 storePassword = System.getenv()["CM_KEYSTORE_PASSWORD"]
-                keyAlias = keystoreProperties["SIGNING_KEY_RELEASE_KEY"] as? String
-                    ?: throw IllegalStateException("keyAlias is missing or invalid")
+                keyAlias =
+                    keystoreProperties["SIGNING_KEY_RELEASE_KEY"] as? String
+                        ?: throw IllegalStateException("keyAlias is missing or invalid")
                 keyPassword = System.getenv()["CM_KEY_PASSWORD"]
             } else {
                 storeFile = file(
@@ -98,9 +99,10 @@ android {
                 )
                 storePassword = keystoreProperties["storePassword"] as? String
                     ?: throw IllegalStateException("storePassword is missing or invalid")
-                keyAlias = keystoreProperties["keyAlias"] as? String ?: throw IllegalStateException(
-                    "keyAlias is missing or invalid"
-                )
+                keyAlias = keystoreProperties["keyAlias"] as? String
+                    ?: throw IllegalStateException(
+                        "keyAlias is missing or invalid"
+                    )
                 keyPassword = keystoreProperties["keyPassword"] as? String
                     ?: throw IllegalStateException("keyPassword is missing or invalid")
             }
@@ -112,14 +114,16 @@ android {
                         "SIGNING_KEY_DEBUG_PATH for storeFile is missing or invalid",
                     ),
             )
-            storePassword = keystoreProperties["SIGNING_KEY_DEBUG_PASSWORD"] as? String
-                ?: throw IllegalStateException("storePassword is missing or invalid")
+            storePassword =
+                keystoreProperties["SIGNING_KEY_DEBUG_PASSWORD"] as? String
+                    ?: throw IllegalStateException("storePassword is missing or invalid")
             keyAlias = keystoreProperties["SIGNING_KEY_DEBUG_KEY"] as? String
                 ?: throw IllegalStateException(
                     "keyAlias is missing or invalid"
                 )
-            keyPassword = keystoreProperties["SIGNING_KEY_DEBUG_KEY_PASSWORD"] as? String
-                ?: throw IllegalStateException("keyPassword is missing or invalid")
+            keyPassword =
+                keystoreProperties["SIGNING_KEY_DEBUG_KEY_PASSWORD"] as? String
+                    ?: throw IllegalStateException("keyPassword is missing or invalid")
         }
         register("production") {
             storeFile = file(
@@ -128,12 +132,14 @@ android {
                         "SIGNING_KEY_RELEASE_PATH for storeFile is missing or invalid",
                     ),
             )
-            storePassword = keystoreProperties["SIGNING_KEY_RELEASE_PASSWORD"] as? String
-                ?: throw IllegalStateException("storePassword is missing or invalid")
+            storePassword =
+                keystoreProperties["SIGNING_KEY_RELEASE_PASSWORD"] as? String
+                    ?: throw IllegalStateException("storePassword is missing or invalid")
             keyAlias = keystoreProperties["SIGNING_KEY_RELEASE_KEY"] as? String
                 ?: throw IllegalStateException("keyAlias is missing or invalid")
-            keyPassword = keystoreProperties["SIGNING_KEY_RELEASE_KEY_PASSWORD"] as? String
-                ?: throw IllegalStateException("keyPassword is missing or invalid")
+            keyPassword =
+                keystoreProperties["SIGNING_KEY_RELEASE_KEY_PASSWORD"] as? String
+                    ?: throw IllegalStateException("keyPassword is missing or invalid")
         }
     }
 

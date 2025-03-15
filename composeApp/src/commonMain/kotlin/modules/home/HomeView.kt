@@ -128,12 +128,16 @@ fun HomeView() {
         end = Offset(x = 0f, y = 1000f),
     )
 
-    Box(modifier = Modifier.background(gradient).fillMaxHeight()) {
+    Box(
+        modifier = Modifier.background(gradient).fillMaxHeight()
+            .padding(top = 16.dp)
+    ) {
         Column(
             modifier = Modifier.fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = "Politer AI",
                 modifier = Modifier.padding(top = 20.dp, bottom = 12.dp),
