@@ -1,16 +1,11 @@
-buildscript {
-    dependencies {
-        classpath(libs.gradle)
-        classpath(libs.google.services)
-        classpath(libs.firebase.crashlytics.gradle)
-    }
-}
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
-    alias(libs.plugins.jetbrainsCompose) apply false
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.composeMultiplatform) apply false
+    alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
-    id("org.jetbrains.kotlin.android") version "1.9.20" apply false
+    alias(libs.plugins.googleGmsGoogleServices) apply false
+    alias(libs.plugins.googleFirebaseCrashlytics) apply false
 }

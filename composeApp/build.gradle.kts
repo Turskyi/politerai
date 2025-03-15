@@ -1,12 +1,11 @@
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsCompose)
-    id("org.jetbrains.kotlin.android") version "1.9.20" apply false
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
     kotlin("plugin.serialization").version("1.9.21")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
@@ -56,7 +55,6 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
-            @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.ktor.client.core)
@@ -76,7 +74,6 @@ android {
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
         applicationId = libs.versions.applicationId.get()
@@ -88,10 +85,12 @@ android {
     signingConfigs {
         register("release") {
             if (System.getenv()["FCI_BUILD_ID"] != null) { // FCI_BUILD_ID is exported by Codemagic
-                storeFile = System.getenv()["CM_KEYSTORE_PATH"]?.let { file(it) }
+                storeFile =
+                    System.getenv()["CM_KEYSTORE_PATH"]?.let { file(it) }
                 storePassword = System.getenv()["CM_KEYSTORE_PASSWORD"]
-                keyAlias = keystoreProperties["SIGNING_KEY_RELEASE_KEY"] as? String
-                    ?: throw IllegalStateException("keyAlias is missing or invalid")
+                keyAlias =
+                    keystoreProperties["SIGNING_KEY_RELEASE_KEY"] as? String
+                        ?: throw IllegalStateException("keyAlias is missing or invalid")
                 keyPassword = System.getenv()["CM_KEY_PASSWORD"]
             } else {
                 storeFile = file(
@@ -100,9 +99,10 @@ android {
                 )
                 storePassword = keystoreProperties["storePassword"] as? String
                     ?: throw IllegalStateException("storePassword is missing or invalid")
-                keyAlias = keystoreProperties["keyAlias"] as? String ?: throw IllegalStateException(
-                    "keyAlias is missing or invalid"
-                )
+                keyAlias = keystoreProperties["keyAlias"] as? String
+                    ?: throw IllegalStateException(
+                        "keyAlias is missing or invalid"
+                    )
                 keyPassword = keystoreProperties["keyPassword"] as? String
                     ?: throw IllegalStateException("keyPassword is missing or invalid")
             }
@@ -114,14 +114,16 @@ android {
                         "SIGNING_KEY_DEBUG_PATH for storeFile is missing or invalid",
                     ),
             )
-            storePassword = keystoreProperties["SIGNING_KEY_DEBUG_PASSWORD"] as? String
-                ?: throw IllegalStateException("storePassword is missing or invalid")
+            storePassword =
+                keystoreProperties["SIGNING_KEY_DEBUG_PASSWORD"] as? String
+                    ?: throw IllegalStateException("storePassword is missing or invalid")
             keyAlias = keystoreProperties["SIGNING_KEY_DEBUG_KEY"] as? String
                 ?: throw IllegalStateException(
                     "keyAlias is missing or invalid"
                 )
-            keyPassword = keystoreProperties["SIGNING_KEY_DEBUG_KEY_PASSWORD"] as? String
-                ?: throw IllegalStateException("keyPassword is missing or invalid")
+            keyPassword =
+                keystoreProperties["SIGNING_KEY_DEBUG_KEY_PASSWORD"] as? String
+                    ?: throw IllegalStateException("keyPassword is missing or invalid")
         }
         register("production") {
             storeFile = file(
@@ -130,14 +132,17 @@ android {
                         "SIGNING_KEY_RELEASE_PATH for storeFile is missing or invalid",
                     ),
             )
-            storePassword = keystoreProperties["SIGNING_KEY_RELEASE_PASSWORD"] as? String
-                ?: throw IllegalStateException("storePassword is missing or invalid")
+            storePassword =
+                keystoreProperties["SIGNING_KEY_RELEASE_PASSWORD"] as? String
+                    ?: throw IllegalStateException("storePassword is missing or invalid")
             keyAlias = keystoreProperties["SIGNING_KEY_RELEASE_KEY"] as? String
                 ?: throw IllegalStateException("keyAlias is missing or invalid")
-            keyPassword = keystoreProperties["SIGNING_KEY_RELEASE_KEY_PASSWORD"] as? String
-                ?: throw IllegalStateException("keyPassword is missing or invalid")
+            keyPassword =
+                keystoreProperties["SIGNING_KEY_RELEASE_KEY_PASSWORD"] as? String
+                    ?: throw IllegalStateException("keyPassword is missing or invalid")
         }
     }
+
     buildFeatures {
         compose = true
     }
@@ -184,8 +189,20 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = libs.versions.applicationId.get()
+            packageName = libs.versions.dockName.get()
             packageVersion = libs.versions.versionName.get()
+
+            macOS {
+                iconFile.set(project.file("../composeApp/src/desktopMain/icons/icon.icns"))
+                bundleID = libs.versions.applicationId.get()
+                dockName = libs.versions.dockName.get()
+            }
+            windows {
+                iconFile.set(project.file("../composeApp/src/desktopMain/icons/icon.ico"))
+            }
+            linux {
+                iconFile.set(project.file("../composeApp/src/desktopMain/icons/icon.png"))
+            }
         }
     }
 }

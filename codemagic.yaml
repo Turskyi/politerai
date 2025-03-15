@@ -9,7 +9,7 @@ workflows:
       android_signing:
         - politerai_android_keystore_reference
       groups:
-        - google_play_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - google-services.json here)
+        - google_play_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS – google-services.json here)
     triggering:
       events:
         - push

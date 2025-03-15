@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
@@ -34,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -57,10 +57,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import politerai.composeapp.generated.resources.Res
+import politerai.composeapp.generated.resources.main_horizontal_image
 
-@OptIn(ExperimentalResourceApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun HomeView() {
     val useCase = GetPoliteMessageUseCase()
@@ -73,7 +73,8 @@ fun HomeView() {
     var showImage: Boolean by remember { mutableStateOf(true) }
     var isTextFieldFocused: Boolean by remember { mutableStateOf(false) }
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-    val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+    val keyboardController: SoftwareKeyboardController? =
+        LocalSoftwareKeyboardController.current
 
     fun handleSubmit() {
         keyboardController?.hide()
@@ -92,7 +93,8 @@ fun HomeView() {
                     scope.launch {
                         // Call the suspend function on a background thread
                         withContext(Dispatchers.IO) {
-                            val entity: Entity = useCase.getPoliteMessage(prompt)
+                            val entity: Entity =
+                                useCase.getPoliteMessage(prompt)
                             // Update the state with the message
                             message = entity.politerMessage
                             messageLoading = false
@@ -126,11 +128,16 @@ fun HomeView() {
         end = Offset(x = 0f, y = 1000f),
     )
 
-    Box(modifier = Modifier.background(gradient).fillMaxHeight()) {
+    Box(
+        modifier = Modifier.background(gradient).fillMaxHeight()
+            .padding(top = 16.dp)
+    ) {
         Column(
-            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = "Politer AI",
                 modifier = Modifier.padding(top = 20.dp, bottom = 12.dp),
@@ -145,7 +152,8 @@ fun HomeView() {
                 style = MaterialTheme.typography.h6
             )
             Text(
-                text = "Type your message below and click the button to make it more polite and friendly.",
+                text = "Type your message below and click the button to " +
+                        "make it more polite and friendly.",
                 modifier = Modifier.padding(top = 12.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.body1
@@ -176,9 +184,13 @@ fun HomeView() {
                     ) { Text("Type your message below") }
                 },
                 placeholder = {
-                    Text("e.g. I do not have time for this nonsense. Stop bothering me.")
+                    Text(
+                        "e.g. I do not have time for this nonsense. " +
+                                "Stop bothering me."
+                    )
                 },
-                modifier = Modifier.padding(10.dp).widthIn(min = 420.dp, max = 440.dp)
+                modifier = Modifier.padding(10.dp)
+                    .widthIn(min = 420.dp, max = 440.dp)
                     .height(100.dp)
                     .onFocusChanged { state: FocusState ->
                         isTextFieldFocused = state.isFocused
@@ -209,23 +221,29 @@ fun HomeView() {
             }
             if (messageLoadingError) {
                 Text(
-                    text = "We apologize for the inconvenience, but the OpenAI API is not available at the moment. It looks like we have reached our limit or quota for the API. Please wait for a while or switch to a different service.",
+                    text = "We apologize for the inconvenience, but the " +
+                            "OpenAI API is not available at the moment. It " +
+                            "looks like we have reached our limit or quota " +
+                            "for the API. Please wait for a while or switch " +
+                            "to a different service.",
                     modifier = Modifier.padding(10.dp),
                     color = Color.Red
                 )
             }
             if (message.isNotEmpty()) {
-                Text(
-                    text = message,
-                    modifier = Modifier.padding(
-                        start = 10.dp,
-                        top = 10.dp,
-                        end = 10.dp,
-                        bottom = 40.dp,
-                    ),
-                    style = MaterialTheme.typography.h5,
-                    textAlign = TextAlign.Center,
-                )
+                SelectionContainer {
+                    Text(
+                        text = message,
+                        modifier = Modifier.padding(
+                            start = 10.dp,
+                            top = 10.dp,
+                            end = 10.dp,
+                            bottom = 40.dp,
+                        ),
+                        style = MaterialTheme.typography.h5,
+                        textAlign = TextAlign.Center,
+                    )
+                }
                 showImage = false
             }
             AnimatedVisibility(visible = showImage) {
@@ -252,8 +270,11 @@ fun HomeView() {
                         )
                 ) {
                     Image(
-                        painter = painterResource("main_horizontal_image.png"),
-                        contentDescription = "A picture of somebody holding the image of a smile",
+                        painter = painterResource(
+                            Res.drawable.main_horizontal_image,
+                        ),
+                        contentDescription = "A picture of somebody holding " +
+                                "the image of a smile",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.matchParentSize(),
                     )

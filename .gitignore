@@ -1,4 +1,5 @@
 *.iml
+.kotlin
 .gradle
 **/build/
 xcuserdata
@@ -15,8 +16,13 @@ captures
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+
+# Files with environment variables.
 key.properties
 composeApp/src/androidMain/keystore/codemagic.keystore
 pc-api-8790223297246728168-552-84bd97eeb74a.json
 politerai_debug.keystore
 politerai_release.keystore
+/composeApp/src/androidMain/keystore/
+/composeApp/google-services.json
+/composeApp/release/
