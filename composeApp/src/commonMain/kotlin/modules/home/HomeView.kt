@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
@@ -147,7 +148,8 @@ fun HomeView() {
                 style = MaterialTheme.typography.h6
             )
             Text(
-                text = "Type your message below and click the button to make it more polite and friendly.",
+                text = "Type your message below and click the button to " +
+                        "make it more polite and friendly.",
                 modifier = Modifier.padding(top = 12.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.body1
@@ -178,7 +180,10 @@ fun HomeView() {
                     ) { Text("Type your message below") }
                 },
                 placeholder = {
-                    Text("e.g. I do not have time for this nonsense. Stop bothering me.")
+                    Text(
+                        "e.g. I do not have time for this nonsense. " +
+                                "Stop bothering me."
+                    )
                 },
                 modifier = Modifier.padding(10.dp)
                     .widthIn(min = 420.dp, max = 440.dp)
@@ -222,17 +227,19 @@ fun HomeView() {
                 )
             }
             if (message.isNotEmpty()) {
-                Text(
-                    text = message,
-                    modifier = Modifier.padding(
-                        start = 10.dp,
-                        top = 10.dp,
-                        end = 10.dp,
-                        bottom = 40.dp,
-                    ),
-                    style = MaterialTheme.typography.h5,
-                    textAlign = TextAlign.Center,
-                )
+                SelectionContainer {
+                    Text(
+                        text = message,
+                        modifier = Modifier.padding(
+                            start = 10.dp,
+                            top = 10.dp,
+                            end = 10.dp,
+                            bottom = 40.dp,
+                        ),
+                        style = MaterialTheme.typography.h5,
+                        textAlign = TextAlign.Center,
+                    )
+                }
                 showImage = false
             }
             AnimatedVisibility(visible = showImage) {
@@ -259,8 +266,11 @@ fun HomeView() {
                         )
                 ) {
                     Image(
-                        painter = painterResource(Res.drawable.main_horizontal_image),
-                        contentDescription = "A picture of somebody holding the image of a smile",
+                        painter = painterResource(
+                            Res.drawable.main_horizontal_image,
+                        ),
+                        contentDescription = "A picture of somebody holding " +
+                                "the image of a smile",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.matchParentSize(),
                     )
