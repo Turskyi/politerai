@@ -41,7 +41,8 @@ is used to deliver
 new release app bundle to **Google Play** after every push to **master** branch;
 
 • App testing platforms:
-[Firebase App Distribution](https://appdistribution.firebase.dev/i/353f302e0032e469);
+[Firebase App Distribution](https://appdistribution.firebase.dev/i/353f302e0032e469),
+[iOS TestFlight](https://testflight.apple.com/join/T4rrJGD6);
 
 • App store:
 [Google Play](https://play.google.com/store/apps/details?id=com.turskyi.politerai);
