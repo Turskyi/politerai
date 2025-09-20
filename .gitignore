@@ -26,3 +26,4 @@ politerai_release.keystore
 /composeApp/src/androidMain/keystore/
 /composeApp/google-services.json
 /composeApp/release/
+iosApp/iosApp.xcodeproj/xcshareddata/xcschemes/iosApp.xcscheme

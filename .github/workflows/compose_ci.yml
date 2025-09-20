@@ -3,7 +3,7 @@ name: Upload to Firebase App Distribution
 on:
   push:
     branches:
-      - dev
+      - five
 
 jobs:
   build:
