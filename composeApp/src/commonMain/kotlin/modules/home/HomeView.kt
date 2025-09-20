@@ -72,7 +72,7 @@ fun HomeView() {
     var messageLoadingError: Boolean by remember { mutableStateOf(false) }
     var showImage: Boolean by remember { mutableStateOf(true) }
     var isTextFieldFocused: Boolean by remember { mutableStateOf(false) }
-    val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val keyboardController: SoftwareKeyboardController? =
         LocalSoftwareKeyboardController.current
 
@@ -92,25 +92,28 @@ fun HomeView() {
                     // Launch a coroutine
                     scope.launch {
                         // Call the suspend function on a background thread
-                        withContext(Dispatchers.IO) {
-                            val entity: Entity =
-                                useCase.getPoliteMessage(prompt)
-                            // Update the state with the message
+                        withContext(context = Dispatchers.IO) {
+                            val entity: Entity = useCase.getPoliteMessage(
+                                prompt,
+                            )
+                            // Update the state with the message.
                             message = entity.politerMessage
                             messageLoading = false
                         }
                     }
                 }
             } catch (error: Exception) {
+                println("Error getting polite message: $error")
                 messageLoadingError = true
                 messageLoading = false
             }
         } else {
-            // Launch a coroutine to show the Snackbar
+            // Launch a coroutine to show the Snack-bar.
             scope.launch {
-                // Show the Snackbar with a message
-                snackbarHostState.showSnackbar(
-                    message = "Please enter some text before clicking the button",
+                // Show the Snack-bar with a message.
+                snackBarHostState.showSnackbar(
+                    message = "Please enter some text " +
+                            "before clicking the button",
                     duration = SnackbarDuration.Short,
                 )
             }
@@ -118,7 +121,7 @@ fun HomeView() {
     }
 
 
-// Colors for the gradient
+//Colors for the gradient
     val colors: List<Color> = listOf(Color.White, Color(0xFFDFCAFF))
 
 // A linear gradient brush with the colors
@@ -282,7 +285,7 @@ fun HomeView() {
             }
         }
         SnackbarHost(
-            hostState = snackbarHostState,
+            hostState = snackBarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
