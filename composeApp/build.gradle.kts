@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    kotlin("plugin.serialization").version("1.9.21")
+    kotlin("plugin.serialization").version(libs.versions.kotlin.get())
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
@@ -18,8 +18,8 @@ keystoreProperties.load(keystorePropertiesFile.inputStream())
 kotlin {
     androidTarget {
         compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
+            compilerOptions.configure {
+                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
             }
         }
     }
@@ -239,3 +239,4 @@ compose.desktop {
         }
     }
 }
+
