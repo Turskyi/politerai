@@ -209,7 +209,12 @@ compose.desktop {
         mainClass = "MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(
+                TargetFormat.Dmg,
+                TargetFormat.Pkg,
+                TargetFormat.Msi,
+                TargetFormat.Deb
+            )
             packageName = libs.versions.dockName.get()
             packageVersion = libs.versions.versionName.get()
 
@@ -221,6 +226,20 @@ compose.desktop {
                 )
                 bundleID = libs.versions.applicationId.get()
                 dockName = libs.versions.dockName.get()
+                appStore = true
+                signing {
+                    sign.set(true)
+                    identity.set("3rd Party Mac Developer Application: DMYTRO TURSKYI (26QZ8BPZFL)")
+                }
+                entitlementsFile.set(
+                    project.file("src/desktopMain/entitlements/entitlements.plist"),
+                )
+                runtimeEntitlementsFile.set(
+                    project.file("src/desktopMain/entitlements/runtime-entitlements.plist"),
+                )
+                provisioningProfile.set(
+                    project.file("src/desktopMain/entitlements/app.provisionprofile"),
+                )
             }
             windows {
                 iconFile.set(
