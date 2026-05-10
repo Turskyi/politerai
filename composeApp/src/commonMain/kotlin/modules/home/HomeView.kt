@@ -149,7 +149,7 @@ fun HomeView() {
                 color = Color(0xFF7669ff)
             )
             Text(
-                text = "powered by GPT-3.5",
+                text = "powered by Advanced AI",
                 modifier = Modifier.padding(10.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.h6
@@ -225,10 +225,10 @@ fun HomeView() {
             if (messageLoadingError) {
                 Text(
                     text = "We apologize for the inconvenience, but the " +
-                            "OpenAI API is not available at the moment. It " +
+                            "AI service is not available at the moment. It " +
                             "looks like we have reached our limit or quota " +
-                            "for the API. Please wait for a while or switch " +
-                            "to a different service.",
+                            "for the service. Please wait for a while or switch " +
+                            "to a different provider.",
                     modifier = Modifier.padding(10.dp),
                     color = Color.Red
                 )
