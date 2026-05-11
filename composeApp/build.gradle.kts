@@ -208,6 +208,18 @@ compose.desktop {
     application {
         mainClass = "MainKt"
 
+        buildTypes {
+            release {
+                // Compose Desktop runs ProGuard for release builds. Ktor uses ServiceLoader-based
+                // extension providers (META-INF/services) for Kotlinx Serialization. Without explicit
+                // keep rules, ProGuard may strip provider implementations and the app will crash
+                // at runtime (as seen in TestFlight).
+                proguard {
+                    configurationFiles.from(project.file("proguard-desktop-rules.pro"))
+                }
+            }
+        }
+
         nativeDistributions {
             targetFormats(
                 TargetFormat.Dmg,
@@ -226,10 +238,9 @@ compose.desktop {
                 )
                 bundleID = libs.versions.applicationId.get()
                 dockName = libs.versions.dockName.get()
-                appStore = true
+                appStore = false
                 signing {
-                    sign.set(true)
-                    identity.set("3rd Party Mac Developer Application: DMYTRO TURSKYI (26QZ8BPZFL)")
+                    sign.set(false)
                 }
                 entitlementsFile.set(
                     project.file("src/desktopMain/entitlements/entitlements.plist"),
@@ -240,6 +251,12 @@ compose.desktop {
                 provisioningProfile.set(
                     project.file("src/desktopMain/entitlements/app.provisionprofile"),
                 )
+                infoPlist {
+                    // Required for Mac App Store uploads. "Unknown" is rejected by altool/App Store Connect.
+                    extraKeysRawXml =
+                        "<key>ITSAppUsesNonExemptEncryption</key><false/>" +
+                                "<key>LSApplicationCategoryType</key><string>public.app-category.productivity</string>"
+                }
             }
             windows {
                 iconFile.set(
@@ -258,4 +275,3 @@ compose.desktop {
         }
     }
 }
-

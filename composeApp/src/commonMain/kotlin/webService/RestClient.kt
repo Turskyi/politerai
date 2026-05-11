@@ -11,7 +11,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 class RestClient {
-    private val httpClient = HttpClient {
+    private val httpClient = HttpClient(getHttpClientEngine()) {
         install(plugin = ContentNegotiation) {
             json(
                 Json {
