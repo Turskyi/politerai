@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    kotlin("plugin.serialization").version("1.9.21")
+    kotlin("plugin.serialization").version(libs.versions.kotlin.get())
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
@@ -18,16 +18,21 @@ keystoreProperties.load(keystorePropertiesFile.inputStream())
 kotlin {
     androidTarget {
         compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
+            compilerOptions.configure {
+                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
             }
         }
     }
 
-    jvm("desktop")
+    jvm("desktop") {
+        compilations.all {
+            compilerOptions.configure {
+                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+            }
+        }
+    }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -190,8 +195,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
@@ -208,8 +213,25 @@ compose.desktop {
     application {
         mainClass = "MainKt"
 
+        buildTypes {
+            release {
+                // Compose Desktop runs ProGuard for release builds. Ktor uses ServiceLoader-based
+                // extension providers (META-INF/services) for Kotlinx Serialization. Without explicit
+                // keep rules, ProGuard may strip provider implementations and the app will crash
+                // at runtime (as seen in TestFlight).
+                proguard {
+                    configurationFiles.from(project.file("proguard-desktop-rules.pro"))
+                }
+            }
+        }
+
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(
+                TargetFormat.Dmg,
+                TargetFormat.Pkg,
+                TargetFormat.Msi,
+                TargetFormat.Deb
+            )
             packageName = libs.versions.dockName.get()
             packageVersion = libs.versions.versionName.get()
 
@@ -221,6 +243,25 @@ compose.desktop {
                 )
                 bundleID = libs.versions.applicationId.get()
                 dockName = libs.versions.dockName.get()
+                appStore = false
+                signing {
+                    sign.set(false)
+                }
+                entitlementsFile.set(
+                    project.file("src/desktopMain/entitlements/entitlements.plist"),
+                )
+                runtimeEntitlementsFile.set(
+                    project.file("src/desktopMain/entitlements/runtime-entitlements.plist"),
+                )
+                provisioningProfile.set(
+                    project.file("src/desktopMain/entitlements/app.provisionprofile"),
+                )
+                infoPlist {
+                    // Required for Mac App Store uploads. "Unknown" is rejected by altool/App Store Connect.
+                    extraKeysRawXml =
+                        "<key>ITSAppUsesNonExemptEncryption</key><false/>" +
+                                "<key>LSApplicationCategoryType</key><string>public.app-category.productivity</string>"
+                }
             }
             windows {
                 iconFile.set(

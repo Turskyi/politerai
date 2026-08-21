@@ -45,10 +45,25 @@ new release app bundle to **Google Play** after every push to **master** branch;
 [iOS TestFlight](https://testflight.apple.com/join/T4rrJGD6);
 
 • App store:
-[Google Play](https://play.google.com/store/apps/details?id=com.turskyi.politerai);
+[Google Play](https://play.google.com/store/apps/details?id=com.turskyi.politerai),
+[Mac App Store](https://apps.apple.com/app/politer-ai/id6743640556);
 
 • Architectural pattern:
 [Monolith](https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures#all-in-one-applications);
+
+### Distribution (macOS)
+
+For detailed technical steps and AI agent instructions,
+see [AI_MACOS_RELEASE.md](AI_MACOS_RELEASE.md).
+
+Quick steps:
+
+1. Ensure `com.apple.quarantine` attributes are removed:
+   `xattr -r -d com.apple.quarantine .`.
+2. Build the signed package: `./gradlew :composeApp:packageReleasePkg`.
+3. If manual signing is required due to profile embedding issues, follow the
+   instructions in the release guide.
+4. Upload to App Store Connect using `altool` or Transporter.
 
 ### Folder structure
 
