@@ -68,6 +68,7 @@ fun HomeView() {
     val scope: CoroutineScope = rememberCoroutineScope()
     var prompt: String by remember { mutableStateOf("") }
     var message: String by remember { mutableStateOf("") }
+    var provider: String? by remember { mutableStateOf(null) }
     var messageLoading: Boolean by remember { mutableStateOf(false) }
     var messageLoadingError: Boolean by remember { mutableStateOf(false) }
     var showImage: Boolean by remember { mutableStateOf(true) }
@@ -79,6 +80,7 @@ fun HomeView() {
     fun handleSubmit() {
         keyboardController?.hide()
         message = ""
+        provider = null
         if (prompt.isNotEmpty()) {
             try {
                 isTextFieldFocused = true
@@ -98,6 +100,7 @@ fun HomeView() {
                             )
                             // Update the state with the message.
                             message = entity.politerMessage
+                            provider = entity.provider
                             messageLoading = false
                         }
                     }
@@ -234,18 +237,34 @@ fun HomeView() {
                 )
             }
             if (message.isNotEmpty()) {
-                SelectionContainer {
-                    Text(
-                        text = message,
-                        modifier = Modifier.padding(
-                            start = 10.dp,
-                            top = 10.dp,
-                            end = 10.dp,
-                            bottom = 40.dp,
-                        ),
-                        style = MaterialTheme.typography.h5,
-                        textAlign = TextAlign.Center,
-                    )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    SelectionContainer {
+                        Text(
+                            text = message,
+                            modifier = Modifier.padding(
+                                start = 10.dp,
+                                top = 10.dp,
+                                end = 10.dp,
+                                bottom = if (provider != null) 4.dp else 40.dp,
+                            ),
+                            style = MaterialTheme.typography.h5,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                    provider?.let { p ->
+                        val label = when (p) {
+                            "groq" -> "Groq"
+                            "mistral" -> "Mistral"
+                            "gemini" -> "Gemini"
+                            else -> p.replaceFirstChar { it.uppercase() }
+                        }
+                        Text(
+                            text = "Generated using $label",
+                            style = MaterialTheme.typography.caption,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                            modifier = Modifier.padding(bottom = 40.dp)
+                        )
+                    }
                 }
                 showImage = false
             }
