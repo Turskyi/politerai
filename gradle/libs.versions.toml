@@ -1,6 +1,6 @@
 [versions]
-versionName = "1.1.3"
-versionCode = "13"
+versionName = "1.1.4"
+versionCode = "14"
 dockName = "Politer AI"
 applicationId = "com.turskyi.politerai"
 compose = "1.12.0"
