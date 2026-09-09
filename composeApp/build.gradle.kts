@@ -260,7 +260,8 @@ compose.desktop {
                     // Required for Mac App Store uploads. "Unknown" is rejected by altool/App Store Connect.
                     extraKeysRawXml =
                         "<key>ITSAppUsesNonExemptEncryption</key><false/>" +
-                                "<key>LSApplicationCategoryType</key><string>public.app-category.productivity</string>"
+                                "<key>LSApplicationCategoryType</key><string>public.app-category.productivity</string>" +
+                                "<key>CFBundleVersion</key><string>${libs.versions.versionCode.get()}</string>"
                 }
             }
             windows {

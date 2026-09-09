@@ -91,17 +91,28 @@ PROVISIONING_PROFILE="composeApp/src/desktopMain/entitlements/app.provisionprofi
 /usr/libexec/PlistBuddy -c "Print :LSApplicationCategoryType" "${APP_BUNDLE}/Contents/Info.plist" || true
 
 # (Remove problematic subcomponent from the Compose build)
-# IMPORTANT: if you re-package without cleaning, you can accidentally upload an older version.
+# IMPORTANT: Compose Gradle plugin might put app.provisionprofile in Contents/ which breaks codesign.
 rm -f "${APP_BUNDLE}/Contents/app.provisionprofile"
+rm -f "${APP_BUNDLE}/Contents/embedded.provisionprofile"
+rm -rf "${APP_BUNDLE}/_CodeSignature"
 
 # (Align Info.plist)
 /usr/libexec/PlistBuddy -c "Set :LSMinimumSystemVersion 12.0" "${APP_BUNDLE}/Contents/Info.plist"
+
+# (Sync CFBundleVersion with versionCode from libs.versions.toml to satisfy App Store)
+VERSION_CODE=$(grep 'versionCode =' gradle/libs.versions.toml | cut -d '\"' -f 2)
+if [ -z "$VERSION_CODE" ]; then
+    VERSION_CODE=$(grep 'versionCode =' gradle/libs.versions.toml | awk -F'"' '{print $2}')
+fi
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${VERSION_CODE}" "${APP_BUNDLE}/Contents/Info.plist"
+
 # ITSAppUsesNonExemptEncryption should already be set by Gradle, but double check
 /usr/libexec/PlistBuddy -c "Delete :ITSAppUsesNonExemptEncryption" "${APP_BUNDLE}/Contents/Info.plist" || true
 /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" "${APP_BUNDLE}/Contents/Info.plist"
 
 # (Manual Embed Provisioning Profile)
 cp "${PROVISIONING_PROFILE}" "${APP_BUNDLE}/Contents/embedded.provisionprofile"
+chmod 644 "${APP_BUNDLE}/Contents/embedded.provisionprofile"
 
 # (Deep Signing Fix: Sign all `dylibs` and executables manually)
 # 1. Sign app-native libraries (Compose/Skiko lives here)
@@ -116,7 +127,10 @@ if [ -f "${JSPAWNHELPER}" ]; then
     codesign -s "${IDENTITY}" -vvvv --timestamp --options runtime --entitlements "${CHILD_ENTITLEMENTS}" --force "${JSPAWNHELPER}"
 fi
 
-# 4. Sign the app bundle itself (must be last)
+# 4. Sign the main executable
+codesign -s "${IDENTITY}" -vvvv --timestamp --options runtime --entitlements "${ENTITLEMENTS}" --force "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}"
+
+# 5. Sign the app bundle itself (must be last)
 codesign -s "${IDENTITY}" -vvvv --timestamp --options runtime --entitlements "${ENTITLEMENTS}" --force "${APP_BUNDLE}"
 
 # (Preflight: ensure App Store signature checks will pass)
